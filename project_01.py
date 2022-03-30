@@ -56,7 +56,7 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots(2,2, figsize=(8,6))
 for i in range(2):
     for j in range(2):
-        ax[i,j].hist(list(img1_box[2*i+j].reshape((size*2)**2)))
+        ax[i,j].hist(list(img1_box[2*i+j].reshape((size*2)**2)),bins=20, color='green', edgecolor='black')
         ax[i,j].set_title('img1_'+str(2*i+j))
 plt.subplots_adjust(hspace=0.3)
 plt.show()
@@ -65,14 +65,42 @@ plt.show()
 fig, ax = plt.subplots(2,2, figsize=(8,6))
 for i in range(2):
     for j in range(2):
-        ax[i,j].hist(list(img2_box[2*i+j].reshape((size*2)**2)))
+        ax[i,j].hist(list(img2_box[2*i+j].reshape((size*2)**2)),bins=20, color='#54CAEA', edgecolor='black')
         ax[i,j].set_title('img2_'+str(2*i+j))
 plt.subplots_adjust(hspace=0.3)
 plt.show()
 
+calc=list()
+for coord in click_points[:4]:
+    y,x = coord
+    patch=img1[y-size:y+size,x-size:x+size]
+    cal_hist = cv2.calcHist([patch], channels=[0], mask=None, histSize=[20], ranges=[np.min(patch),np.max(patch)])
+    calc.append(cal_hist)
+    print(cal_hist)
+for coord in click_points[4:]:
+    y,x = coord
+    patch=img2[y-size:y+size,x-size:x+size]
+    cal_hist = cv2.calcHist([patch], channels=[0], mask=None, histSize=[20], ranges=[np.min(patch),np.max(patch)])
+    calc.append(cal_hist)
+    print(cal_hist)
 
+fig, ax = plt.subplots(2,2, figsize=(8,6))
+for i in range(2):
+    for j in range(2):
+        flatten=calc[2*i+j].flatten()
+        binX=np.arange(20)*(256//20)
+        ax[i,j].plot(binX,flatten,color='r')
+        ax[i,j].bar(binX,flatten,width=6,color='b')
+plt.subplots_adjust(hspace=0.3)
+plt.show()
 
-
-
-
+fig, ax = plt.subplots(2,2, figsize=(8,6))
+for i in range(2):
+    for j in range(2):
+        flatten=calc[2*i+j+4].flatten()
+        binX=np.arange(20)*(256//20)
+        ax[i,j].plot(binX,flatten,color='r')
+        ax[i,j].bar(binX,flatten,width=6,color='b')
+plt.subplots_adjust(hspace=0.3)
+plt.show()
 
